@@ -39,10 +39,10 @@ public class MainDriver {
 
         System.out.println(node.value);
 
-        while(!queue.isEmpty()) {
+        while (!queue.isEmpty()) {
             GraphNode v = queue.poll();
-            for(GraphNode w : v.neighbors) {
-                if(!w.visited) {
+            for (GraphNode w : v.neighbors) {
+                if (!w.visited) {
                     System.out.println(w.value);
                     w.visited = true;
                     queue.add(w);
@@ -57,23 +57,24 @@ public class MainDriver {
         Stack<GraphNode> stack = new Stack<GraphNode>();
         stack.push(node);
 
-        while(!stack.isEmpty()) {
+        while (!stack.isEmpty()) {
             GraphNode v = stack.pop();
-            if(!v.visited) {
+            if (!v.visited) {
                 System.out.println(v.value);
                 v.visited = true;
-                for(int i = v.neighbors.length - 1; i >= 0; i--) {
+                for (int i = v.neighbors.length - 1; i >= 0; i--) {
                     stack.push(v.neighbors[i]);
                 }
             }
         }
 
     }
+
     public static void DFSRec(GraphNode node) {
         System.out.println(node.value);
         node.visited = true;
-        for(GraphNode w : node.neighbors) {
-            if(!w.visited) {
+        for (GraphNode w : node.neighbors) {
+            if (!w.visited) {
                 DFSRec(w);
             }
         }
