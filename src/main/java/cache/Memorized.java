@@ -4,11 +4,11 @@ import java.util.concurrent.*;
 
 import static cache.ThrowableHelper.launderThrowable;
 
-public class Memorizer<A, V> implements Computable<A, V> {
+public class Memorized<A, V> implements Computable<A, V> {
     private final ConcurrentMap<A, Future<V>> cache = new ConcurrentHashMap<>();
     private final Computable<A, V> c;
 
-    public Memorizer(Computable<A, V> c) {
+    public Memorized(Computable<A, V> c) {
         this.c = c;
     }
 
@@ -40,7 +40,7 @@ public class Memorizer<A, V> implements Computable<A, V> {
             return arg.length();
         };
 
-        Memorizer<String, Integer> cache = new Memorizer<>(compute);
+        Memorized<String, Integer> cache = new Memorized<>(compute);
         Integer a = cache.compute("a");
         System.out.println(a);
         Integer a2 = cache.compute("a");
