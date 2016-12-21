@@ -2,8 +2,6 @@ package amazon;
 
 import java.util.*;
 
-import java.util.stream.Stream;
-
 public class Solution {
 
     public static class Movie {
@@ -66,21 +64,47 @@ public class Solution {
       */
 
     public static List<Movie> getMovieRecommendations(Movie movie, int numTopRatedSimilarMovies) {
-        Set<Movie> baseSet = new HashSet<>();
 
-
-        Set<Movie> visited = movie.getSimilarMovies().stream()
-                .map(m -> flatMapMovies(new LinkedList<>(m.getSimilarMovies()), baseSet))
-                .flatMap(Collection::stream)
-                .collect(java.util.stream.Collectors.toSet());
-
-
+        Set<Movie> visited = getAllMovies(movie);
         visited.remove(movie); //remove current movie from result set
 
         List<Movie> result = sortMoviesByRatingDescending(visited);
         System.out.println(result);
 
         return returnTopNResults(numTopRatedSimilarMovies, result);
+    }
+
+    private static Set<Movie> getAllMovies(Movie movie) {
+        Set<Movie> visited = new HashSet<>();
+        DFS(movie, visited);
+        return visited;
+    }
+
+    private static void DFS(Movie movie, Set<Movie> alreadyVisited) {
+        alreadyVisited.add(movie);
+
+        for (Movie neighbour : movie.getSimilarMovies()) {
+            if (!alreadyVisited.contains(neighbour)) {
+                DFS(neighbour, alreadyVisited);
+            }
+        }
+    }
+
+    private static void BFS(Movie movie, Set<Movie> alreadyVisited){
+        Queue<Movie> queue = new LinkedList<>();
+        alreadyVisited.add(movie);
+        queue.add(movie);
+
+        while(!queue.isEmpty()){
+            Movie currentNode = queue.poll();
+            for(Movie neighbour: currentNode.getSimilarMovies()){
+                if(!alreadyVisited.contains(neighbour)){
+                    alreadyVisited.add(neighbour);
+                    queue.add(neighbour);
+                }
+            }
+        }
+
     }
 
     private static List<Movie> returnTopNResults(int numTopRatedSimilarMovies, List<Movie> result) {
@@ -93,18 +117,6 @@ public class Solution {
         result.addAll(visited);
         result.sort(Comparator.comparing(Movie::getRating).reversed());
         return result;
-    }
-
-    private static Set<Movie> flatMapMovies(List<Movie> movies, Set<Movie> alreadyVisited) {
-
-        if (movies.isEmpty()) return alreadyVisited;
-        else {
-            Movie head = movies.get(0);
-            LinkedList<Movie> similarMoviesDefenciveCopy = new LinkedList<>(head.getSimilarMovies()); //operate on defencive copy of list structure
-            alreadyVisited.add(head);
-            similarMoviesDefenciveCopy.removeAll(alreadyVisited);
-            return flatMapMovies(similarMoviesDefenciveCopy, alreadyVisited);
-        }
     }
 
 
